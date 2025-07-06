@@ -1,6 +1,7 @@
 const { initializeApp } = require("firebase/app");
 const { getFirestore, collection, addDoc, Timestamp } = require("firebase/firestore/lite");
-require("dotenv").config(); // מוסיף את התמיכה ב-.env
+const fetch = require("node-fetch"); // נדרש לשליחת בקשה לטלגרם
+require("dotenv").config(); // תמיכה בקובץ .env
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -11,7 +12,6 @@ const firebaseConfig = {
   appId: process.env.FIREBASE_APP_ID,
   measurementId: process.env.FIREBASE_MEASUREMENT_ID
 };
-console.log("FIREBASE CONFIG:", firebaseConfig);
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -21,7 +21,7 @@ exports.handler = async (event) => {
     const body = JSON.parse(event.body);
     const message = body.message;
 
-    if (!message || !message.text) {
+    if (!message || !message.text || !message.chat || !message.chat.id) {
       return {
         statusCode: 200,
         body: "No valid message received."
@@ -54,13 +54,23 @@ exports.handler = async (event) => {
       grocery_invoice: ""
     });
 
+    // שלח הודעה חזרה למשתמש בטלגרם
+    await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: message.chat.id,
+        text: "✅ הרשימה נשמרה בהצלחה!"
+      })
+    });
+
     return {
       statusCode: 200,
-      body: "✅ List saved"
+      body: "✅ List saved and confirmation sent to Telegram"
     };
 
   } catch (err) {
-    console.error(err);
+    console.error("Error:", err);
     return {
       statusCode: 500,
       body: "Error saving list"
