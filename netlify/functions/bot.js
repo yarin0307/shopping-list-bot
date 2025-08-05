@@ -1,7 +1,11 @@
+// --- Changes for the new library ---
+// New library import: "GoogleGenAI" instead of "GoogleGenerativeAI"
+const { GoogleGenAI } = require("@google/genai");
+// --- End of changes ---
+
 const { initializeApp } = require("firebase/app");
 const { getFirestore, collection, addDoc, Timestamp } = require("firebase/firestore/lite");
 const fetch = require("node-fetch");
-const { GoogleGenerativeAI } = require("@google/generative-ai");
 require("dotenv").config();
 
 // Firebase config
@@ -18,12 +22,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Gemini setup
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// --- Changes for the new library ---
+// New client initialization syntax. The apiKey is now a parameter of the constructor.
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// --- End of changes ---
 
 async function reformatWithGemini(originalText) {
   try {
-    const model = genAI.getGenerativeModel({ model: "models/gemini-pro" });
+    // New, correct model name: "gemini-1.5-flash"
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
 תיקח את רשימת הקניות הזו ותרשום אותה בפורמט הבא:
