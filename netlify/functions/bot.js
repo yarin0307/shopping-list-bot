@@ -1,4 +1,6 @@
+// --- Import the new, correct Gemini library ---
 const { GoogleGenAI } = require("@google/genai");
+
 const { initializeApp } = require("firebase/app");
 const { getFirestore, collection, addDoc, Timestamp } = require("firebase/firestore/lite");
 const fetch = require("node-fetch");
@@ -18,13 +20,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Gemini setup with the new library
+// --- New client initialization syntax ---
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 async function reformatWithGemini(originalText) {
   try {
-    // Correct way to get the model with the new library
-    const model = genAI.models.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // --- Correct syntax for new library and the working model name ---
+    const model = genAI.models.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const prompt = `
 תיקח את רשימת הקניות הזו ותרשום אותה בפורמט הבא:
@@ -39,7 +41,7 @@ ${originalText}
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    return response.text();
+    return response.text(); // return raw formatted Gemini response
   } catch (error) {
     console.error("Gemini failed:", error.message);
     return null;
