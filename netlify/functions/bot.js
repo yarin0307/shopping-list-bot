@@ -29,8 +29,8 @@ const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 async function reformatWithGemini(originalText) {
   try {
-    // New, correct model name: "gemini-1.5-flash"
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // CORRECTED LINE: Access the model via `genAI.models`
+    const model = genAI.models.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
 תיקח את רשימת הקניות הזו ותרשום אותה בפורמט הבא:
