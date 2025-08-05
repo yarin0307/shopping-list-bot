@@ -1,8 +1,4 @@
-// --- Changes for the new library ---
-// New library import: "GoogleGenAI" instead of "GoogleGenerativeAI"
 const { GoogleGenAI } = require("@google/genai");
-// --- End of changes ---
-
 const { initializeApp } = require("firebase/app");
 const { getFirestore, collection, addDoc, Timestamp } = require("firebase/firestore/lite");
 const fetch = require("node-fetch");
@@ -22,14 +18,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- Changes for the new library ---
-// New client initialization syntax. The apiKey is now a parameter of the constructor.
+// Gemini setup with the new library
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-// --- End of changes ---
 
 async function reformatWithGemini(originalText) {
   try {
-    // CORRECTED LINE: Access the model via `genAI.models`
+    // Correct way to get the model with the new library
     const model = genAI.models.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
@@ -45,7 +39,7 @@ ${originalText}
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    return response.text(); // return raw formatted Gemini response
+    return response.text();
   } catch (error) {
     console.error("Gemini failed:", error.message);
     return null;
