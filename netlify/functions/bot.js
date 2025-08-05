@@ -26,7 +26,7 @@ const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 async function reformatWithGemini(originalText) {
   try {
     // --- Correct syntax for new library and the working model name ---
-    const model = genAI.models.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
 תיקח את רשימת הקניות הזו ותרשום אותה בפורמט הבא:
@@ -39,7 +39,7 @@ async function reformatWithGemini(originalText) {
 ${originalText}
 `;
 
-    const result = await model.generateContent(prompt);
+    const result = await model.generateContent([prompt]);
     const response = await result.response;
     return response.text(); // return raw formatted Gemini response
   } catch (error) {
