@@ -1,10 +1,8 @@
-// --- Import the new, correct Gemini library ---
-const { GoogleGenAI } = require("@google/genai");
+require("dotenv").config();
+const fetch = require("node-fetch");
 
 const { initializeApp } = require("firebase/app");
 const { getFirestore, collection, addDoc, Timestamp } = require("firebase/firestore/lite");
-const fetch = require("node-fetch");
-require("dotenv").config();
 
 // Firebase config
 const firebaseConfig = {
@@ -20,15 +18,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- New client initialization syntax ---
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
+// ✅ Working Gemini API call
 async function reformatWithGemini(originalText) {
-  try {
-    // --- Correct syntax for new library and the working model name ---
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const endpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
-    const prompt = `
+  const prompt = `
 תיקח את רשימת הקניות הזו ותרשום אותה בפורמט הבא:
 שם מוצר | קטגוריה | כמות | הערות
 
@@ -39,9 +33,27 @@ async function reformatWithGemini(originalText) {
 ${originalText}
 `;
 
-    const result = await model.generateContent([prompt]);
-    const response = await result.response;
-    return response.text(); // return raw formatted Gemini response
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [{ text: prompt }],
+          },
+        ],
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+      return data.candidates[0].content.parts[0].text;
+    } else {
+      console.error("❌ Gemini error:", JSON.stringify(data, null, 2));
+      return null;
+    }
   } catch (error) {
     console.error("Gemini failed:", error.message);
     return null;
