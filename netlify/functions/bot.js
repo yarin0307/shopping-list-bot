@@ -22,16 +22,19 @@ const db = getFirestore(app);
 async function reformatWithGemini(originalText) {
   const endpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
-  const prompt = `
-תיקח את רשימת הקניות הזו ותרשום אותה בפורמט הבא:
+const prompt = `
+תיקח את רשימת הקניות הזו ותרשום אותה בפורמט הבא **בלי לכתוב כותרות עמודות בכלל**:
 שם מוצר | קטגוריה | כמות | הערות
 
 כאשר הקטגוריה תיבחר מתוך הרשימה הבאה בלבד:
 חטיפים וממתקים, משקאות, שימורים, תבלינים ועשבים, מוצרי ניקיון, קפואים, סבון והיגיינה אישית, מוצרים להכנה, כלים חד פעמיים, רטבים, מוצרי חלב, ירקות, פירות, בשר ודגים, לחמים ומאפים, פחמימות ודגנים
 
+אל תחזיר כותרות טבלה, רק את השורות עצמן בפורמט שצוין.
+
 הקלט:
 ${originalText}
 `;
+
 
   try {
     const response = await fetch(endpoint, {
