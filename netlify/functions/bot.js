@@ -137,9 +137,10 @@ exports.handler = async (event) => {
     await addDoc(collection(db, "grocery-list"), {
       grocery_items: items,
       grocery_date: Timestamp.now(),
-      grocery_amount: "",
+      grocery_amount: 0,
       grocery_invoice: "",
-      grocery_name:""
+      grocery_name:"",
+      grocery_payments: 0
     });
 
     // Step 4: Confirm to Telegram
