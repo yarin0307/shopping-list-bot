@@ -138,7 +138,8 @@ exports.handler = async (event) => {
       grocery_items: items,
       grocery_date: Timestamp.now(),
       grocery_amount: "",
-      grocery_invoice: ""
+      grocery_invoice: "",
+      grocery_name:""
     });
 
     // Step 4: Confirm to Telegram
